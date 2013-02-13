@@ -1,0 +1,24 @@
+{
+  "author": "Christopher Fredén",
+  "name": "prinlet",
+  "description": "create a static image composed of several map tiles",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "ssh://kar-toffel1.kartena.intra/home/likewise-open/KARTENA/christopherf/src/prinlet.git"
+  },
+  "engines": {
+    "node": "~0.8"
+  },
+  "dependencies": {
+    "modestmaps": "*",
+    "canvas": "*",
+    "get": "*"
+  },
+  "devDependencies": {
+    "coffee-script": "~1.4"
+  }
+  ,"scripts": {
+    "prepublish": "node_modules/.bin/coffee -c *.coffee"
+  }
+}
