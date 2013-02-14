@@ -53,8 +53,11 @@ module.exports = prinlet = (tilejson) ->
 
     checkDone = ->
       if completeRequests is numRequests
-        drawGeoJSON(ctx, latlngPoint, geojson) if geojson?
-        callback undefined, 'image/png', canvas.pngStream()
+        doCallback = -> callback undefined, 'image/png', canvas.pngStream()
+        if geojson?
+          drawGeoJSON {ctx, latlngPoint, geojson}, doCallback
+        else
+          doCallback()
 
     getTile = (c, callback) ->
       # Cycle through tile providers to spread load
@@ -64,10 +67,10 @@ module.exports = prinlet = (tilejson) ->
         numRequests++
         new get(url).asBuffer (err, data) ->
           (return callback "#{url} error: #{err}") if err?
-          img = new Canvas.Image()
+          img = new Canvas.Image
           img.src = data
-          p = coordinatePoint c
-          ctx.drawImage img, p.x, p.y, tileSize, tileSize
+          {x, y} = coordinatePoint c
+          ctx.drawImage img, x, y, tileSize, tileSize
           completeRequests++
           checkDone()
 
