@@ -3,18 +3,33 @@ MM = require 'modestmaps'
 Canvas = require 'canvas'
 
 drawGeoJSON = require './geojson'
+Proj4mm = require './proj4mm'
 
 module.exports = prinlet = (tilejson) ->
-  providerIndex = 0
-  providers = (new MM.Template tmpl for tmpl in tilejson.tiles)
-
   # TODO: read tilejson.crs and tilejson.projection to determen projection
   # use Google-y Mercator projection for now
-  projection = new MM.MercatorProjection(0,
-    MM.deriveTransformation(-Math.PI,  Math.PI, 0, 0,
-                             Math.PI,  Math.PI, 1, 0,
-                            -Math.PI, -Math.PI, 0, 1))
+  if tilejson.crs and tilejson.projection
+    {crs, transform:[ta, tc, te, tf], projection:def, scales} = tilejson
+    projection = new Proj4mm
+      zoom: 0
+      transformation: new MM.Transformation ta, 0, tc, 0, te, tf
+      crs: crs
+      def: def
+      scales: scales
+  else
+    projection = new MM.MercatorProjection(0,
+      MM.deriveTransformation(-Math.PI,  Math.PI, 0, 0,
+                               Math.PI,  Math.PI, 1, 0,
+                              -Math.PI, -Math.PI, 0, 1))
   tileSize = 256
+  providerIndex = 0
+  providers = for tmpl in tilejson.tiles
+    provider = new MM.Template tmpl
+    provider.tileLimits = [
+      projection.createCoordinate(-1e10,-1e10,0).zoomTo(tilejson.minzoom or 0),
+      projection.createCoordinate(1e10,1e10,0).zoomTo(tilejson.maxzoom or 18)
+    ]
+    provider
 
   (opt, callback) ->
     {width, height, zoom, lng, lat, geojson} = opt
@@ -43,10 +58,11 @@ module.exports = prinlet = (tilejson) ->
     locationPoint = (location) ->
       coordinatePoint projection.locationCoordinate(location).zoomTo zoom
 
-    latlngPoint = (latlng) ->
-      loc = new MM.Location latlng[0], latlng[1]
-      point = coordinatePoint projection.locationCoordinate(loc).zoomTo zoom
-      [point.x, point.y]
+    lnglatPoint = (lnglat) ->
+      [lng, lat] = lnglat
+      loc = new MM.Location lat, lng
+      {x, y} = coordinatePoint projection.locationCoordinate(loc).zoomTo zoom
+      [x, y]
 
     numRequests = 0
     completeRequests = 0
@@ -55,7 +71,7 @@ module.exports = prinlet = (tilejson) ->
       if completeRequests is numRequests
         doCallback = -> callback undefined, 'image/png', canvas.pngStream()
         if geojson?
-          drawGeoJSON {ctx, latlngPoint, geojson}, doCallback
+          drawGeoJSON {ctx, lnglatPoint, geojson}, doCallback
         else
           doCallback()
 
@@ -79,32 +95,5 @@ module.exports = prinlet = (tilejson) ->
 
     for column in [startCoord.column..endCoord.column]
       for row in [startCoord.row..endCoord.row]
-        getTile new MM.Coordinate row, column, zoom
+        getTile projection.createCoordinate row, column, zoom
     return
-
-if not module.parent
-  fs = require 'fs'
-  {parse} = require 'url'
-  {createServer, STATUS_CODES} = require('http')
-  [port, tileJSONPath] = process.argv[2..]
-
-  render = prinlet JSON.parse fs.readFileSync(tileJSONPath or 'tile.json')
-  server = createServer (req, res) ->
-    {pathname, query} = parse req.url, true
-    [width, height, zoom, lat, lng] = pathname.substr(1).split '/'
-    opt =
-      width: parseInt width
-      height: parseInt height
-      zoom: parseInt zoom
-      lat: parseFloat lat
-      lng: parseFloat lng
-    (opt.geojson = JSON.parse query.geojson) if query.geojson?
-    render opt, (err, mime, stream) ->
-      if err?
-        res.writeHead 500
-        res.end "#{STATUS_CODES[500]}: #{err}"
-      else
-        res.writeHead 200, 'Content-Type': mime
-        stream.pipe res
-
-  server.listen parseInt port or 4140

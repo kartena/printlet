@@ -2,7 +2,7 @@ get = require 'get'
 Canvas = require 'canvas'
 
 module.exports = (opt, callback) ->
-  {ctx, latlngPoint, geojson:{features}} = opt
+  {ctx, lnglatPoint, geojson:{features}} = opt
 
   numRequests = 0
   completeRequests = 0
@@ -12,29 +12,27 @@ module.exports = (opt, callback) ->
     if numRequests is completeRequests and processedFeatures is features.length
       callback()
 
-  applyStyle = (styles) ->
-    (ctx[style] = value) for style, value of styles
-    fill: styles.fillStyle?
-    stroke: styles.strokeStyle?
-
-  drawFeature = (feature) ->
-    {type, coordinates} = feature.geometry
-    {style} = feature.properties
-    drawPath = (fn) ->
+  drawPath = (style, fn) ->
+    fill = style.fillStyle?
+    stroke = style.strokeStyle?
+    if fill and stroke
       ctx.save()
-      {fill, stroke} = applyStyle style if style?
-      if fill and stroke
+      try
+        (ctx[name] = value) for name, value of style
         ctx.beginPath()
         fn()
         ctx.fill() if fill
         ctx.stroke() if stroke
-      ctx.restore()
-    console.log type, style
+      finally
+        ctx.restore()
+
+  drawFeature = (feature) ->
+    {type, coordinates:lnglats} = feature.geometry
+    {style} = feature.properties
     switch type
       when 'Point'
-        [x, y] = latlngPoint coordinates
+        [x, y] = lnglatPoint lnglats
         if style?.image?
-          console.log style.image
           {url, offset} = style.image
           numRequests++
           new get(url).asBuffer (err, data) ->
@@ -44,16 +42,16 @@ module.exports = (opt, callback) ->
             offset ?= x:img.width/2, y:img.height/2
             x -= offset.x
             y -= offset.y
-            ctx.drawImage img, Math.round(x), Math.round(y), img.width, img.height
+            ctx.drawImage img, x, y, img.width, img.height
             completeRequests++
             checkDone()
         else
-          drawPath ->
+          drawPath style, ->
             ctx.arc x, y, (style?.radius or 8), 0 , 2 * Math.PI, false
       when 'LineString', 'Polygon'
-        drawPath ->
-          ctx.lineTo.apply(ctx, latlngPoint coord) for coord in coordinates
-          ctx.lineTo.apply(ctx, latlngPoint coordinates[0]) if type is 'Polygon'
+        drawPath style, ->
+          ctx.lineTo.apply(ctx, lnglatPoint lnglat) for lnglat in lnglats
+          ctx.lineTo.apply(ctx, lnglatPoint lnglats[0]) if type is 'Polygon'
 
   for feature in features
     drawFeature feature
