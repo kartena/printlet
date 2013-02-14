@@ -19,6 +19,6 @@
     "coffee-script": "~1.4"
   }
   ,"scripts": {
-    "prepublish": "node_modules/.bin/coffee -c *.coffee"
+    "prepublish": "node_modules/.bin/coffee -c -o lib coffee"
   }
 }

@@ -2,6 +2,8 @@ get = require 'get'
 MM = require 'modestmaps'
 Canvas = require 'canvas'
 
+drawGeoJSON = require './geojson'
+
 module.exports = prinlet = (tilejson) ->
   providerIndex = 0
   providers = (new MM.Template tmpl for tmpl in tilejson.tiles)
@@ -15,7 +17,7 @@ module.exports = prinlet = (tilejson) ->
   tileSize = 256
 
   (opt, callback) ->
-    {width, height, zoom, lng, lat} = opt
+    {width, height, zoom, lng, lat, geojson} = opt
     location = new MM.Location lat, lng
     canvas = new Canvas width, height
     ctx = canvas.getContext '2d'
@@ -38,11 +40,20 @@ module.exports = prinlet = (tilejson) ->
       point.y += tileSize * (coord.row - centerCoordinate.row)
       point
 
+    locationPoint = (location) ->
+      coordinatePoint projection.locationCoordinate(location).zoomTo zoom
+
+    latlngPoint = (latlng) ->
+      loc = new MM.Location latlng[0], latlng[1]
+      point = coordinatePoint projection.locationCoordinate(loc).zoomTo zoom
+      [point.x, point.y]
+
     numRequests = 0
     completeRequests = 0
 
     checkDone = ->
       if completeRequests is numRequests
+        drawGeoJSON(ctx, latlngPoint, geojson) if geojson?
         callback undefined, 'image/png', canvas.pngStream()
 
     getTile = (c, callback) ->
@@ -76,14 +87,15 @@ if not module.parent
 
   render = prinlet JSON.parse fs.readFileSync(tileJSONPath or 'tile.json')
   server = createServer (req, res) ->
-    [width, height, zoom, lat, lng] =
-      parse(req.url).pathname.substr(1).split '/'
+    {pathname, query} = parse req.url, true
+    [width, height, zoom, lat, lng] = pathname.substr(1).split '/'
     opt =
       width: parseInt width
       height: parseInt height
       zoom: parseInt zoom
       lat: parseFloat lat
       lng: parseFloat lng
+    (opt.geojson = JSON.parse query.geojson) if query.geojson?
     render opt, (err, mime, stream) ->
       if err?
         res.writeHead 500
