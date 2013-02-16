@@ -1,17 +1,21 @@
 {
   "author": "Christopher Fredén",
-  "name": "prinlet",
-  "description": "create a static image composed of several map tiles",
+  "name": "printlet",
+  "description": "Generate static images from tiles and draw suff on top.",
   "version": "0.0.1",
   "repository": {
     "type": "git",
-    "url": "ssh://kar-toffel1.kartena.intra/home/likewise-open/KARTENA/christopherf/src/prinlet.git"
+    "url": "https://github.com/kartena/printlet.git"
   },
+  "licenses": [{
+    "type": "MIT",
+    "url": "https://raw.github.com/kartena/printlet/master/LICENSE"
+  }],
   "engines": {
     "node": "~0.8"
   },
   "dependencies": {
-    "modestmaps": "*",
+    "modestmaps": "git+https://github.com/icetan/modestmaps-js.git",
     "proj4js": "*",
     "canvas": "*",
     "get": "*"
