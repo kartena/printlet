@@ -2,11 +2,11 @@ fs = require 'fs'
 {parse} = require 'url'
 {createServer, STATUS_CODES} = require('http')
 
-prinlet = require './lib/prinlet'
+printlet = require './lib/printlet'
 
 [port, tileJSONPath] = process.argv[2..]
 
-render = prinlet JSON.parse fs.readFileSync(tileJSONPath or 'tile.json')
+render = printlet JSON.parse fs.readFileSync(tileJSONPath or 'tile.json')
 
 server = createServer (req, res) ->
   {pathname, query} = parse req.url, true
