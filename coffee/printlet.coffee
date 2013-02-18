@@ -1,13 +1,10 @@
 get = require 'get'
-#MM = require 'modestmaps'
 Canvas = require 'canvas'
 
 drawGeoJSON = require './geojson'
 {projection, tileUrl} = require './proj'
 
 module.exports = printlet = (tilejson) ->
-  # TODO: read tilejson.crs and tilejson.projection to determen projection
-  # use Google-y Mercator projection for now
   proj = projection tilejson
   tileSize = 256
   providerIndex = 0
@@ -15,35 +12,39 @@ module.exports = printlet = (tilejson) ->
 
   (opt, callback) ->
     {width, height, zoom, lng, lat, geojson} = opt
-    #location = new MM.Location lat, lng
     location = x:lng, y:lat
     canvas = new Canvas width, height
     ctx = canvas.getContext '2d'
 
     centerCoordinate = proj.project location, zoom
 
-    floor = (point) ->
-      x: Math.floor point.x
-      y: Math.floor point.y
-
     pointCoordinate = (point) ->
-      # new point coordinate reflecting distance from map center, in tile widths
-      #point = proj.scale x:point.x-width/2, y:point.y/height/2
-      x: (centerCoordinate.x + (point.x - width/2)) / tileSize
-      y: (centerCoordinate.y + (point.y - height/2)) / tileSize
+      # Return projected map coordinate reflecting pixel points from map center
+      x: centerCoordinate.x + (point.x - width/2)
+      y: centerCoordinate.y + (point.y - height/2)
 
     coordinatePoint = (coord) ->
-      # Return an x, y point on the map image for a given coordinate.
-      #if coord.zoom isnt zoom
-      #  coord = coord.zoomTo zoom
-      x: (width / 2) + (tileSize * coord.x) - centerCoordinate.x
-      y: (height / 2) + (tileSize * coord.y) - centerCoordinate.y
+      # Return an x, y point on the map image for a given coordinate
+      x: (width / 2) + (coord.x) - centerCoordinate.x
+      y: (height / 2) + (coord.y) - centerCoordinate.y
 
-    locationPoint = (location) -> coordinatePoint proj.project location, zoom
+    pointTile = (point) ->
+      # Return tile coordinate reflecting pixel points from map center
+      coord = pointCoordinate point
+      x: coord.x / tileSize
+      y: coord.y / tileSize
+
+    tilePoint = (tile) ->
+      # Return an x, y tile point for a given projected coordinate
+      coordinatePoint x: tile.x * tileSize, y: tile.y * tileSize
+
+    floor = (tile) ->
+      x: Math.floor tile.x
+      y: Math.floor tile.y
 
     lnglatPoint = (lnglat) ->
       [lng, lat] = lnglat
-      {x, y} = coordinatePoint proj.project {x:lng, y:lat}, zoom
+      {x, y} = coordinatePoint proj.project({x:lng, y:lat}, zoom)
       [x, y]
 
     numRequests = 0
@@ -57,9 +58,9 @@ module.exports = printlet = (tilejson) ->
         else
           doCallback()
 
-    getTile = (c, callback) ->
+    getTile = (tile, callback) ->
       # Cycle through tile providers to spread load
-      url = providers[providerIndex] c, zoom
+      url = providers[providerIndex] tile, zoom
       providerIndex = (providerIndex+1) % providers.length
       if url
         numRequests++
@@ -70,13 +71,13 @@ module.exports = printlet = (tilejson) ->
           else
             img = new Canvas.Image
             img.src = data
-            {x, y} = coordinatePoint c
+            {x, y} = tilePoint tile
             ctx.drawImage img, x, y, tileSize, tileSize
           completeRequests++
           checkDone()
 
-    startCoord = floor pointCoordinate x:0, y:0
-    endCoord = floor pointCoordinate x:width, y:height
+    startCoord = floor pointTile x:0, y:0
+    endCoord = floor pointTile x:width, y:height
 
     for column in [startCoord.x..endCoord.x]
       for row in [startCoord.y..endCoord.y]

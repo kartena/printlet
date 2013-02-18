@@ -52,10 +52,10 @@ transformation = (a, b, c, d) ->
 
 
 tileUrl = (tmpl) ->
-  (point, zoom) ->
+  (tile, zoom) ->
     tmpl
     .replace(/{Z}/i, zoom.toFixed 0)
-    .replace(/{X}/i, point.x.toFixed 0)
-    .replace(/{Y}/i, point.y.toFixed 0)
+    .replace(/{X}/i, tile.x.toFixed 0)
+    .replace(/{Y}/i, tile.y.toFixed 0)
 
 module.exports = {projection, transformation, tileUrl}

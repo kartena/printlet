@@ -13,22 +13,22 @@ module.exports = (opt, callback) ->
       callback()
 
   drawPath = (style, fn) ->
-    fill = style.fillStyle?
-    stroke = style.strokeStyle?
-    if fill and stroke
-      ctx.save()
-      try
-        (ctx[name] = value) for name, value of style
-        ctx.beginPath()
-        fn()
-        ctx.fill() if fill
-        ctx.stroke() if stroke
-      finally
-        ctx.restore()
+    fill = style?.fillStyle?
+    stroke = style?.strokeStyle?
+    stroke = yes if not stroke and not fill
+    ctx.save()
+    try
+      (ctx[name] = value) for name, value of style
+      ctx.beginPath()
+      fn()
+      ctx.fill() if fill
+      ctx.stroke() if stroke
+    finally
+      ctx.restore()
 
   drawFeature = (feature) ->
     {type, coordinates:lnglats} = feature.geometry
-    {style} = feature.properties
+    {style} = feature.properties if feature.properties?
     switch type
       when 'Point'
         [x, y] = lnglatPoint lnglats
