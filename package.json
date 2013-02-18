@@ -15,7 +15,6 @@
     "node": "~0.8"
   },
   "dependencies": {
-    "modestmaps": "git+https://github.com/icetan/modestmaps-js.git",
     "proj4js": "*",
     "canvas": "*",
     "get": "*"
