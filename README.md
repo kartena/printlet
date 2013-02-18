@@ -1,15 +1,34 @@
 # Printlet
 
-A map printing service for node.js.
+Generate static map images from TileJSON configuration and draw stuff on top.
 
-## Test
+## Getting started
 
-To see a nice OSM view over Gothenburg, do this:
+### Installing dependencies on OS X using Homebrew
+
+```
+$ brew install cairo --without-x
+```
+
+### Installing dependencies on Ubuntu
+
+```
+$ sudo apt-get install libcairo2-dev libjpeg8-dev libpango1.0-dev libgif-dev build-essential g++
+```
+
+### Building Printlet
 
 ```
 $ git clone https://github.com/kartena/printlet.git
 $ cd printlet
 $ npm install
-$ node ./server.js 3000
-$ xdg-open http://localhost:3000/1920/1080/10/57.7/11.9/ # Or just open a web browser
 ```
+
+### Almost done!
+
+```
+$ npm start
+```
+
+Now point your browser to ```http://localhost:41462/1920/1080/10/57.7/11.9```
+and get a nice view of Göteborg.
