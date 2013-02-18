@@ -10,7 +10,7 @@ render = printlet JSON.parse fs.readFileSync(tileJSONPath or 'tile.json')
 
 server = createServer (req, res) ->
   {pathname, query} = parse req.url, true
-  [width, height, zoom, lat, lng] = pathname.substr(1).split '/'
+  [width, height, zoom, lng, lat] = pathname.substr(1).split '/'
   if width and height and zoom? and lat? and lng?
     opt =
       width: parseInt width
@@ -27,4 +27,4 @@ server = createServer (req, res) ->
         res.writeHead 200, 'Content-Type': mime
         stream.pipe res
 
-server.listen parseInt port or 4140
+server.listen parseInt port or 41462
