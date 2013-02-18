@@ -30,5 +30,5 @@ $ npm install
 $ npm start
 ```
 
-Now point your browser to ```http://localhost:41462/1920/1080/10/57.7/11.9```
+Now point your browser to ```http://localhost:41462/1920/1080/10/11.9/57.7```
 and get a nice view of Göteborg.
