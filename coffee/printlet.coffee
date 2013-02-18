@@ -3,7 +3,7 @@ get = require 'get'
 Canvas = require 'canvas'
 
 drawGeoJSON = require './geojson'
-{projection, tileUrl} = require './proj4mm'
+{projection, tileUrl} = require './proj'
 
 module.exports = printlet = (tilejson) ->
   # TODO: read tilejson.crs and tilejson.projection to determen projection
@@ -28,6 +28,7 @@ module.exports = printlet = (tilejson) ->
 
     pointCoordinate = (point) ->
       # new point coordinate reflecting distance from map center, in tile widths
+      #point = proj.scale x:point.x-width/2, y:point.y/height/2
       x: (centerCoordinate.x + (point.x - width/2)) / tileSize
       y: (centerCoordinate.y + (point.y - height/2)) / tileSize
 

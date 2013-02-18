@@ -1,5 +1,6 @@
 Proj4js = require 'proj4js'
 {WGS84, Proj} = Proj4js
+EARTH = 6378137
 
 crsCounter = 0
 
@@ -7,12 +8,12 @@ projection = (projection, transform, scale) ->
   if typeof projection isnt 'string'
     {projection, transform, scale, scales} = projection
   # Set default values if needed
-  projection ?= '+proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +a=6378137 +b=6378137
- +towgs84=0,0,0,0,0,0,0 +units=m +no_defs'
-  transform ?= [0.5 / Math.PI, 0.5, -0.5 / Math.PI, 0.5]
+  projection ?= '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0
+ +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs'
+  transform ?= [0.5/Math.PI/EARTH, 0.5, -0.5/Math.PI/EARTH, 0.5]
   if transform instanceof Array
     transform = transformation.apply undefined, transform
-  scale ?= if scales? then ((z) -> scales[z]) else ((z) -> 1/Math.pow 2, z)
+  scale ?= if scales? then ((z) -> scales[z]) else ((z) -> Math.pow 2,z+8)
   # Create Proj4js projection object from proj4 definition
   # XXX: Proj4js API kinda sux
   defName = "CUSTOM_PROJECTION:#{crsCounter++}"
