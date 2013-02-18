@@ -5,7 +5,7 @@ Canvas = require 'canvas'
 drawGeoJSON = require './geojson'
 Proj4mm = require './proj4mm'
 
-module.exports = prinlet = (tilejson) ->
+module.exports = printlet = (tilejson) ->
   # TODO: read tilejson.crs and tilejson.projection to determen projection
   # use Google-y Mercator projection for now
   if tilejson.crs and tilejson.projection
