@@ -1,8 +1,8 @@
 {
-  "author": "Christopher Fredén",
   "name": "printlet",
-  "description": "Generate static images from tiles and draw suff on top.",
   "version": "0.0.1",
+  "description": "Generate static images from tiles and draw suff on top.",
+  "author": "Christopher Fredén <christopher.freden@kartena.se>",
   "repository": {
     "type": "git",
     "url": "https://github.com/kartena/printlet.git"
@@ -26,6 +26,13 @@
   "bin": {
     "printlet": "./examples/server.js"
   },
+  "files": [
+    "lib/",
+    "examples/osm.json",
+    "examples/server.js",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "prepublish": "node_modules/.bin/coffee -cb -o lib coffee"
   }
