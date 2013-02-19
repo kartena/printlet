@@ -84,3 +84,45 @@ in the examples folder to get the basic gist of the Printlet lib.
 Also there is a more advanced implementation using the GeoJSON drawing
 capabilities as a [HTTP
 server](https://github.com/kartena/printlet/blob/master/examples/server.js).
+
+## Drawing GeoJSON features
+
+At the moment styles for GeoJSON is defined in the ```properties``` attribute of
+a GeoJSON feature as a dictionary called ```style```. The keys under ```style```
+are the same as the HTML5 canvas API for styling shapes.
+
+```json
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [11.95, 57.7]
+      },
+      "properties": {
+        "style": {
+          "fillStyle": "rgb(200, 0, 0, 0.6)",
+          "radius": 15
+        }
+      }
+    }
+  ]
+}
+```
+
+Exceptions to the canvas properties are ```radius``` for geometry type ```Point```
+to define a cricle radius and ```image```.
+
+```image``` is defined as a dictionary as follows.
+
+```json
+{
+  "url": "http://example.com/my-marker-icon.png",
+  "offset": {
+    "x": 10,
+    "y": -15
+  }
+}
+```
