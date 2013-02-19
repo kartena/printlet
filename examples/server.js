@@ -7,7 +7,9 @@ var fs = require('fs'),
 
     args = process.argv.slice(2),
     port = parseInt(args[0] || 41462),
-    tileJson = require('./'+(args[1] || 'osm.json')),
+    tileJson = require(
+      (args[1] != null) ? process.cwd()+'/'+args[1] : './osm.json'
+    ),
 
     render = printlet(tileJson),
     server;
