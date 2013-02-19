@@ -12,17 +12,21 @@
     "url": "https://raw.github.com/kartena/printlet/master/LICENSE"
   }],
   "engines": {
-    "node": "~0.8"
+    "node": "~0.8.14"
   },
   "dependencies": {
-    "proj4js": "*",
-    "canvas": "*",
-    "get": "*"
+    "proj4js": "~0.3.0",
+    "canvas": "~1.0.0",
+    "get": "~1.2.1"
   },
   "devDependencies": {
-    "coffee-script": "~1.4"
-  }
-  ,"scripts": {
-    "prepublish": "node_modules/.bin/coffee -c -o lib coffee && node_modules/.bin/coffee -c *.coffee"
+    "coffee-script": "~1.4.0"
+  },
+  "main": "./lib/printlet.js",
+  "bin": {
+    "printlet": "./examples/server.js"
+  },
+  "scripts": {
+    "prepublish": "node_modules/.bin/coffee -cb -o lib coffee"
   }
 }
