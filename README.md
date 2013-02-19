@@ -18,8 +18,9 @@ render({
   height: 600,
   zoom: 12,
   lng: 11.95,
-  lat: 57.7
-}, function (err, mime, stream) {});
+  lat: 57.7,
+  format: 'png'
+}, function (err, stream) {});
 ```
 
 ## Getting started
@@ -52,7 +53,7 @@ $ printlet
 ```
 
 Now point your browser to
-[http://localhost:41462/800/600/12/11.95/57.7](http://localhost:41462/800/600/12/11.95/57.7)
+[http://localhost:41462/12/11.95/57.7/800x600.png](http://localhost:41462/12/11.95/57.7/800x600.png)
 and get a nice view of Göteborg using a default OSM TileJSON.
 
 ### With custom TileJSON

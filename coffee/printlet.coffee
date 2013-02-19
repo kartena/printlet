@@ -11,7 +11,8 @@ module.exports = printlet = (tilejson) ->
   providers = (tileUrl tmpl for tmpl in tilejson.tiles)
 
   (opt, callback) ->
-    {width, height, zoom, lng, lat, geojson} = opt
+    {width, height, zoom, lng, lat, geojson, format} = opt
+    format ?= 'png'
     location = x:lng, y:lat
     canvas = new Canvas width, height
     ctx = canvas.getContext '2d'
@@ -52,7 +53,14 @@ module.exports = printlet = (tilejson) ->
 
     checkDone = ->
       if completeRequests is numRequests
-        doCallback = -> callback undefined, 'image/png', canvas.pngStream()
+        doCallback = ->
+          stream = switch format
+            when 'png' then canvas.pngStream()
+            when 'jpeg', 'jpg' then canvas.jpegStream()
+          if stream?
+            callback undefined, stream
+          else
+            callback "Image format '#{format}' is not supported."
         if geojson?
           drawGeoJSON {ctx, lnglatPoint, geojson}, doCallback
         else
