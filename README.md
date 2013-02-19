@@ -70,4 +70,4 @@ in the examples folder to get the basic gist of the Printlet lib.
 
 Also there is a more advanced implementation using the GeoJSON drawing
 capabilities as a [HTTP
-server](https://github.com/kartena/printlet/blob/master/examples/static.js)
+server](https://github.com/kartena/printlet/blob/master/examples/server.js).
