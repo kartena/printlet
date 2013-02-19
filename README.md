@@ -30,13 +30,44 @@ render({
 $ brew install cairo --without-x
 ```
 
+*Note: This might cause some problems. Please report issues if Printlet wont
+build after this step.*
+
 ### Installing dependencies on Ubuntu
 
 ```
 $ sudo apt-get install libcairo2-dev libjpeg8-dev libpango1.0-dev libgif-dev build-essential g++
 ```
 
-### Building Printlet
+### Installing Printlet using NPM
+
+```
+$ npm install -g printlet
+```
+
+### Running the HTTP server
+
+```
+$ printlet
+```
+
+Now point your browser to
+[http://localhost:41462/800/600/12/11.95/57.7](http://localhost:41462/800/600/12/11.95/57.7)
+and get a nice view of Göteborg using a default OSM TileJSON.
+
+### With custom TileJSON
+
+Grab your favorite TileJSON and point Printlet to it. There is an example
+TileJSON with a custom projection to try out
+[here](https://github.com/kartena/printlet/blob/master/examples/lmv.json).
+
+```
+$ printlet 41462 your/tile.json
+```
+
+Open browser to same URL as previous step to check it out.
+
+### Building Printlet for developers
 
 ```
 $ git clone https://github.com/kartena/printlet.git
@@ -44,25 +75,7 @@ $ cd printlet
 $ npm install
 ```
 
-### Running the HTTP server
-
-```
-$ node examples/server
-```
-
-Now point your browser to
-[http://localhost:41462/800/600/12/11.95/57.7](http://localhost:41462/800/600/12/11.95/57.7)
-and get a nice view of Göteborg.
-
-### With custom TileJSON
-
-```
-$ node examples/server 41462 examples/lmv.json
-```
-
-Open browser to same URL as above to try it.
-
-## Using Printlet as a lib
+## Examples of using Printlet as a lib
 
 There is a minimalistic [map image
 generator](https://github.com/kartena/printlet/blob/master/examples/static.js)
