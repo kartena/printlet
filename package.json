@@ -15,7 +15,7 @@
     "node": "~0.8.14"
   },
   "dependencies": {
-    "proj4js": "~0.3.0",
+    "proj4node": "~0.0.1",
     "canvas": "~1.0.0",
     "get": "~1.2.1"
   },

@@ -1,7 +1,4 @@
-Proj4js = require 'proj4js'
-{WGS84, Proj} = Proj4js
-
-crsCounter = 0
+{WGS84, Proj, transform:proj4node} = require 'proj4node'
 
 projection = (projection, transform, scale) ->
   if typeof projection isnt 'string'
@@ -14,21 +11,17 @@ projection = (projection, transform, scale) ->
     transform = transformation.apply undefined, transform
   scale ?= if scales? then ((z) -> scales[z]) else ((z) -> Math.pow 2,z+8)
   # Create Proj4js projection object from proj4 definition
-  # XXX: Proj4js API kinda sux
-  defName = "CUSTOM_PROJECTION:#{crsCounter++}"
-  Proj4js.defs[defName] = projection
-  proj = new Proj defName
-  delete Proj4js.defs[defName]
+  proj = new Proj projection
 
   project: (point, zoom) ->
-    point = Proj4js.transform WGS84, proj, point
+    point = proj4node WGS84, proj, point
     point = transform.transform point
     @scale point, zoom
 
   unproject: (point, zoom) ->
     point = @scale point, undefined, zoom
     point = transform.untransform point
-    Proj4js.transform proj, WGS84, point
+    proj4node proj, WGS84, point
 
   scale: (point, to, from) ->
     if from?
