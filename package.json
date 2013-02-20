@@ -1,6 +1,6 @@
 {
   "name": "printlet",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Generate static images from tiles and draw suff on top.",
   "author": "Christopher Fredén <christopher.freden@kartena.se>",
   "repository": {
