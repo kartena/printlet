@@ -40,6 +40,13 @@ build after this step.*
 $ sudo apt-get install libcairo2-dev libjpeg8-dev libpango1.0-dev libgif-dev build-essential g++
 ```
 
+### Installing dependencies on Fedora
+
+```
+$ sudo yum --enablerepo=updates-testing install npm cairo-devel
+```
+*Drop "--enablerepo=updates-testing" if you're on F19 or greater.*
+
 ### Installing Printlet using NPM
 
 ```
