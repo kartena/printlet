@@ -34,6 +34,21 @@ $ brew install cairo --without-x
 *Note: This might cause some problems. Please report issues if Printlet wont
 build after this step.*
 
+#### Troubleshooting problems with libpng (on OS X 10.7.5):
+```
+# For freetype 
+export LIBPNG_CFLAGS=`/usr/local/opt/libpng/bin/libpng-config --cflags`
+export LIBPNG_LDFLAGS=`/usr/local/opt/libpng/bin/libpng-config --ldflags`
+
+# For cairo
+brew link libpng --force
+brew install --env=std cairo --without-x
+brew link cairo --force
+brew link pixman --force
+brew link freetype --force
+```
+
+
 ### Installing dependencies on Ubuntu
 
 ```
