@@ -20,7 +20,7 @@
     "get": "~1.3.0"
   },
   "devDependencies": {
-    "coffee-script": "~1.4.0"
+    "coffee-script": "~1.6.0"
   },
   "main": "./lib/printlet.js",
   "bin": {
@@ -34,6 +34,6 @@
     "README.md"
   ],
   "scripts": {
-    "prepublish": "node_modules/.bin/coffee -cb -o lib coffee"
+    "prepublish": "coffee -cb -o lib coffee"
   }
 }
