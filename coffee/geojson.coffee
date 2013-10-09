@@ -37,40 +37,33 @@ module.exports = (opt, callback) ->
       when 'Point'
         [x, y] = lnglatPoint lnglats
 
-        drawText = =>
-          if style?.text?
-            text = style.text
-            offset = text.offset
-            if offset? then text = text.text else offset = fx:0.5, fy:0.5
-            withStyle style, (ctx) ->
-              {
-                width
-                actualBoundingBoxAscent: ascent
-                actualBoundingBoxDescent: descent
-              } = ctx.measureText text
-              x -= width * df(offset.fx, 0) - df(offset.x, 0)
-              y -= descent - ((ascent + descent) * df(offset.fy, 0)) - df(offset.y, 0)
-              ctx.fillText text, x, y
-            true
-          false
+        if style?.marker?
+          {image, text, radius, offset} = style.marker
+          offset ?= fx:0.5, fy:0.5
 
-        if style?.image?
-          url = style.image
-          offset = url.offset
-          if offset? then url = url.url else offset = fx:0.5, fy:0.5
-          new get(url).asBuffer (err, data) ->
+        if image?
+          new get(image).asBuffer (err, data) ->
             (return console.warn err) if err?
             img = new Canvas.Image
             img.src = data
             x -= img.width * df(offset.fx, 0) - df(offset.x, 0)
             y -= img.height * df(offset.fy, 0) - df(offset.y, 0)
             ctx.drawImage img, x, y, img.width, img.height
-            drawText()
             callback()
           return
-        else if not drawText()
+        else if text?
+          withStyle style, (ctx) ->
+            {
+              width
+              actualBoundingBoxAscent: ascent
+              actualBoundingBoxDescent: descent
+            } = ctx.measureText text
+            x -= width * df(offset.fx, 0) - df(offset.x, 0)
+            y -= descent - ((ascent + descent) * df(offset.fy, 0)) - df(offset.y, 0)
+            ctx.fillText text, x, y
+        else
           drawPath style, (ctx) ->
-            ctx.arc x, y, (style?.radius or 8), 0 , 2 * Math.PI, false
+            ctx.arc x, y, df(radius, 8), 0 , 2 * Math.PI, false
       when 'LineString', 'Polygon'
         drawPath style, (ctx) ->
           ctx.lineTo.apply(ctx, lnglatPoint lnglat) for lnglat in lnglats
