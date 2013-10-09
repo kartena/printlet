@@ -127,7 +127,9 @@ are the same as the HTML5 canvas API for styling shapes.
       "properties": {
         "style": {
           "fillStyle": "rgb(200, 0, 0, 0.6)",
-          "radius": 15
+          "marker": {
+            "radius": 15
+          }
         }
       }
     }
@@ -136,7 +138,8 @@ are the same as the HTML5 canvas API for styling shapes.
 ```
 
 Exceptions to the canvas properties is `marker` which is possible to define for
-geometry type `Point`.
+geometry type `Point` and describes how points are drawn with images, text or a
+circle.
 
 ```json
 {
