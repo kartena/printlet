@@ -135,45 +135,19 @@ are the same as the HTML5 canvas API for styling shapes.
 }
 ```
 
-Exceptions to the canvas properties are `radius` for geometry type `Point`
-to define a cricle radius, `image` and `text`.
-
-`offset` can be defined for both `image` and `text` as follows.
-
-`image` is an URL string pointing to the image to be drawn.
+Exceptions to the canvas properties is `marker` which is possible to define for
+geometry type `Point`.
 
 ```json
-"image": "http://example.org/image.png"
-```
-
-Or with an offset.
-
-```json
-"image": {
-  "url": "http://example.org/image.png",
+{
+  "image": "http://example.org/image.png",
+  "text": "Example text...",
+  "radius": 5,
   "offset": {
     "x": 10,
     "y": -15,
-    "fx": 0,
-    "fy": 0
-  }
-}
-```
-
-`text` is the string to be drawn.
-
-```json
-"text": "Example text..."
-```
-
-Or with an offset.
-
-```json
-"text": {
-  "text": "Example text...",
-  "offset": {
     "fx": 0.5,
-    "fy": 0
+    "fy": 0.5
   }
 }
 ```
