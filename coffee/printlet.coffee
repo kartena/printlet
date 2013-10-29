@@ -1,10 +1,7 @@
-get = require 'get'
-Canvas = require 'canvas'
-
 drawGeoJSON = require './geojson'
 {projection, tileUrl} = require './proj'
 
-module.exports = printlet = (tilejson) ->
+printlet = (tilejson) ->
   proj = projection tilejson
   tileSize = 256
   providerIndex = 0
@@ -14,7 +11,7 @@ module.exports = printlet = (tilejson) ->
     {width, height, zoom, lng, lat, geojson, format} = opt
     format ?= 'png'
     location = x:lng, y:lat
-    canvas = new Canvas width, height
+    canvas = printlet.canvas width, height
     ctx = canvas.getContext '2d'
 
     centerCoordinate = proj.project location, zoom
@@ -54,13 +51,14 @@ module.exports = printlet = (tilejson) ->
     checkDone = ->
       if completeRequests is numRequests
         doCallback = ->
-          stream = switch format
-            when 'png' then canvas.pngStream()
-            when 'jpeg', 'jpg' then canvas.jpegStream()
-          if stream?
-            callback undefined, stream
-          else
-            callback "Image format '#{format}' is not supported."
+          #stream = switch format
+          #  when 'png' then canvas.pngStream()
+          #  when 'jpeg', 'jpg' then canvas.jpegStream()
+          #if stream?
+          #  callback undefined, stream
+          #else
+          #  callback "Image format '#{format}' is not supported."
+          callback undefined, canvas
         if geojson?
           drawGeoJSON {ctx, lnglatPoint, geojson}, doCallback
         else
@@ -72,15 +70,10 @@ module.exports = printlet = (tilejson) ->
       providerIndex = (providerIndex+1) % providers.length
       if url
         numRequests++
-        console.log "Downloading: #{url}"
-        new get(url).asBuffer (err, data) ->
-          if err?
-            console.log "#{url} error: #{err}"
-          else
-            img = new Canvas.Image
-            img.src = data
-            {x, y} = tilePoint tile
-            ctx.drawImage img, x, y, tileSize, tileSize
+        printlet.img url, (err, img) ->
+          return console.log "#{url} error: #{err}" if err?
+          {x, y} = tilePoint tile
+          ctx.drawImage img, x, y, tileSize, tileSize
           completeRequests++
           checkDone()
 
@@ -91,3 +84,30 @@ module.exports = printlet = (tilejson) ->
       for row in [startCoord.y..endCoord.y]
         getTile x:column, y:row
     return
+
+if typeof window isnt 'undefined'
+  printlet.canvas = (width, height) ->
+    canvas = window.document.createElement('canvas')
+    canvas.width = width
+    cavnas.height = height
+    canvas
+
+  printlet.img = (url, callback) ->
+    img = new Image
+    img.onload = -> callback undefined, img
+    img.src = url
+else
+  # Stop Browserify from including non-browser libs
+  nonbrowser = {}
+  nonbrowser[k] = require k for k in ['get', 'canvas']
+
+  printlet.canvas = (width, height) -> new nonbrowser.canvas width, height
+
+  printlet.img = (url, callback) ->
+    new nonbrowser.get(url).asBuffer (err, data) ->
+      return callback err if err
+      img = new nonbrowser.canvas.Image
+      img.src = data
+      callback undefined, img
+
+module.exports = printlet

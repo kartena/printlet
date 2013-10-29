@@ -1,5 +1,4 @@
-get = require 'get'
-Canvas = require 'canvas'
+printlet = require './printlet'
 
 queue = (ls, fn) ->
   if ls.length
@@ -42,10 +41,8 @@ module.exports = (opt, callback) ->
           offset ?= fx:0.5, fy:0.5
 
         if image?
-          new get(image).asBuffer (err, data) ->
+          printlet.img url, (err, img) ->
             (return console.warn err) if err?
-            img = new Canvas.Image
-            img.src = data
             x -= img.width * df(offset.fx, 0) - df(offset.x, 0)
             y -= img.height * df(offset.fy, 0) - df(offset.y, 0)
             ctx.drawImage img, x, y, img.width, img.height
