@@ -8,10 +8,14 @@ printlet = (tilejson) ->
   providers = (tileUrl tmpl for tmpl in tilejson.tiles)
 
   (opt, callback) ->
-    {width, height, zoom, lng, lat, geojson, format} = opt
+    {width, height, zoom, lng, lat, geojson, format, canvas} = opt
     format ?= 'png'
     location = x:lng, y:lat
-    canvas = printlet.canvas width, height
+    if canvas?
+      canvas.width = width
+      canvas.height = height
+    else
+      canvas = printlet.canvas width, height
     ctx = canvas.getContext '2d'
 
     centerCoordinate = proj.project location, zoom
