@@ -51,14 +51,11 @@ printlet = (tilejson) ->
     checkDone = ->
       if completeRequests is numRequests
         doCallback = ->
-          #stream = switch format
-          #  when 'png' then canvas.pngStream()
-          #  when 'jpeg', 'jpg' then canvas.jpegStream()
-          #if stream?
-          #  callback undefined, stream
-          #else
-          #  callback "Image format '#{format}' is not supported."
-          callback undefined, canvas
+          if canvas.pngStream?
+            stream = switch format
+              when 'png' then canvas.pngStream()
+              when 'jpeg', 'jpg' then canvas.jpegStream()
+          callback undefined, stream, canvas
         if geojson?
           drawGeoJSON {ctx, lnglatPoint, geojson}, doCallback
         else
