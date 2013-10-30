@@ -1,4 +1,4 @@
-{WGS84, Proj, transform:proj4node} = require 'proj4node'
+proj4 = require 'proj4'
 
 projection = (projection, transform, scale) ->
   if typeof projection isnt 'string'
@@ -10,18 +10,16 @@ projection = (projection, transform, scale) ->
   if transform instanceof Array
     transform = transformation.apply undefined, transform
   scale ?= if scales? then ((z) -> scales[z]) else ((z) -> Math.pow 2,z+8)
-  # Create Proj4js projection object from proj4 definition
-  proj = new Proj projection
 
   project: (point, zoom) ->
-    point = proj4node WGS84, proj, point
+    point = proj4 projection, point
     point = transform.transform point
     @scale point, zoom
 
   unproject: (point, zoom) ->
     point = @scale point, undefined, zoom
     point = transform.untransform point
-    proj4node proj, WGS84, point
+    proj4 projection, proj4.WGS84, point
 
   scale: (point, to, from) ->
     if from?
@@ -32,7 +30,6 @@ projection = (projection, transform, scale) ->
       point = x:point.x * p, y:point.y * p
     point
 
-
 transformation = (a, b, c, d) ->
   transform: (p) ->
     x: a * p.x + b
@@ -41,7 +38,6 @@ transformation = (a, b, c, d) ->
   untransform: (p) ->
     x: p.x - b / a
     y: p.y - d / c
-
 
 tileUrl = (tmpl) ->
   (tile, zoom) ->

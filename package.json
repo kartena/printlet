@@ -15,7 +15,7 @@
     "node": ">=0.8"
   },
   "dependencies": {
-    "proj4node": "~0.0.5",
+    "proj4": "~1.5.0",
     "canvas": "~1.1.0",
     "get": "~1.3.0"
   },
