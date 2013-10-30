@@ -89,7 +89,7 @@ if typeof window isnt 'undefined'
   printlet.canvas = (width, height) ->
     canvas = window.document.createElement('canvas')
     canvas.width = width
-    cavnas.height = height
+    canvas.height = height
     canvas
 
   printlet.img = (url, callback) ->
