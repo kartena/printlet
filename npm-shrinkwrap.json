@@ -1,0 +1,27 @@
+{
+  "name": "printlet",
+  "version": "0.3.0",
+  "dependencies": {
+    "proj4": {
+      "version": "1.5.0-dev.4",
+      "from": "proj4@*"
+    },
+    "canvas": {
+      "version": "1.1.2",
+      "from": "canvas@*",
+      "resolved": "https://registry.npmjs.org/canvas/-/canvas-1.1.2.tgz",
+      "dependencies": {
+        "nan": {
+          "version": "0.4.1",
+          "from": "nan@~0.4.1",
+          "resolved": "https://registry.npmjs.org/nan/-/nan-0.4.1.tgz"
+        }
+      }
+    },
+    "get": {
+      "version": "1.3.0",
+      "from": "get@*",
+      "resolved": "https://registry.npmjs.org/get/-/get-1.3.0.tgz"
+    }
+  }
+}
