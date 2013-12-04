@@ -1,4 +1,4 @@
-printlet = require './printlet'
+util = require './util'
 
 queue = (ls, fn) ->
   if ls.length
@@ -18,12 +18,12 @@ module.exports = (opt, callback) ->
     ctx.save()
     try
       (ctx[name] = value) for name, value of style
-      fn(ctx)
+      fn(ctx, fill, stroke)
     finally
       ctx.restore()
 
   drawPath = (style, fn) ->
-    withStyle style, (ctx) ->
+    withStyle style, (ctx, fill, stroke) ->
       ctx.beginPath()
       fn(ctx)
       ctx.fill() if fill
@@ -41,7 +41,7 @@ module.exports = (opt, callback) ->
           offset ?= fx:0.5, fy:0.5
 
         if image?
-          printlet.img url, (err, img) ->
+          util.img image, (err, img) ->
             (return console.warn err) if err?
             x -= img.width * df(offset.fx, 0) - df(offset.x, 0)
             y -= img.height * df(offset.fy, 0) - df(offset.y, 0)
