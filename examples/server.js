@@ -41,7 +41,7 @@ server = createServer(function(req, res) {
     if (query.geojson != null) {
       opt.geojson = JSON.parse(query.geojson);
     }
-    render(opt, function(err, stream) {
+    render(opt, function(err, data) {
       if (err != null) {
         res.writeHead(500);
         res.end(STATUS_CODES[500] + ": " + err);
@@ -49,7 +49,7 @@ server = createServer(function(req, res) {
         res.writeHead(200, {
           'Content-Type': 'image/'+format
         });
-        stream.pipe(res);
+        data.stream.pipe(res);
       }
     });
   } catch (err) {

@@ -1,6 +1,8 @@
+Promise = require 'promise'
 drawGeoJSON = require './geojson'
 {projection, tileUrl} = require './proj'
 util = require './util'
+getImg = Promise.denodeify util.img
 
 printlet = (tilejson) ->
   proj = projection tilejson
@@ -8,9 +10,8 @@ printlet = (tilejson) ->
   providerIndex = 0
   providers = (tileUrl tmpl for tmpl in tilejson.tiles)
 
-  (opt, callback) ->
+  Promise.nodeify (opt) ->
     {width, height, zoom, lng, lat, geojson, format, canvas} = opt
-    format ?= 'png'
     location = x:lng, y:lat
     if canvas?
       canvas.width = width
@@ -50,41 +51,30 @@ printlet = (tilejson) ->
       {x, y} = coordinatePoint proj.project({x:lng, y:lat}, zoom)
       [x, y]
 
-    numRequests = 0
-    completeRequests = 0
-
-    checkDone = ->
-      if completeRequests is numRequests
-        doCallback = ->
-          if canvas.pngStream?
-            stream = switch format
-              when 'png' then canvas.pngStream()
-              when 'jpeg', 'jpg' then canvas.jpegStream()
-          callback undefined, stream, canvas
-        if geojson?
-          drawGeoJSON {ctx, lnglatPoint, geojson}, doCallback
-        else
-          doCallback()
-
-    getTile = (tile, callback) ->
+    getTile = (tile) ->
       # Cycle through tile providers to spread load
       url = providers[providerIndex] tile, zoom
       providerIndex = (providerIndex+1) % providers.length
-      if url
-        numRequests++
-        util.img url, (err, img) ->
-          return console.log "#{url} error: #{err}" if err?
-          {x, y} = tilePoint tile
-          ctx.drawImage img, x, y, tileSize, tileSize
-          completeRequests++
-          checkDone()
+      getImg(url).then (img) ->
+        {x, y} = tilePoint tile
+        ctx.drawImage img, x, y, tileSize, tileSize
 
     startCoord = floor pointTile x:0, y:0
     endCoord = floor pointTile x:width, y:height
 
-    for column in [startCoord.x..endCoord.x]
-      for row in [startCoord.y..endCoord.y]
-        getTile x:column, y:row
-    return
+    Promise.all([].concat.apply([], (
+      for column in [startCoord.x..endCoord.x]
+        getTile(x:column, y:row) for row in [startCoord.y..endCoord.y])
+    )).then ->
+      doCallback = ->
+        if canvas.pngStream?
+          stream = switch format
+            when 'png' then canvas.pngStream()
+            when 'jpeg', 'jpg' then canvas.jpegStream()
+        {canvas, stream}
+      if geojson?
+        drawGeoJSON({ctx, lnglatPoint, geojson}).then doCallback
+      else
+        doCallback()
 
 module.exports = printlet

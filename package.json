@@ -19,7 +19,8 @@
   "dependencies": {
     "proj4": "*",
     "canvas": "*",
-    "get": "*"
+    "get": "*",
+    "promise": "*"
   },
   "devDependencies": {
     "coffee-script": "*"
