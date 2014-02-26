@@ -1,6 +1,6 @@
 # Printlet
 
-Generate static map images from TileJSON configuration and draw stuff on top 
+Generate static map images from TileJSON configuration and draw stuff on top
 with GeoJSON.
 
 Printlet supports an extended version of TileJSON for declaring custom map
@@ -11,7 +11,8 @@ Intended for use as a library Printlet also comes with a thin HTTP API as an
 example of implementation but also for practical use.
 
 ```javascript
-render = printlet(require('./tile.json'));
+var printlet = require('printlet'),
+    render = printlet(require('./tile.json'));
 
 render({
   width: 800,
@@ -20,7 +21,7 @@ render({
   lng: 11.95,
   lat: 57.7,
   format: 'png'
-}, function (err, stream) {});
+}, function (err, data) { data.stream.pipe(process.stdout); });
 ```
 
 ## Getting started
@@ -36,7 +37,7 @@ build after this step.*
 
 #### Troubleshooting problems with libpng (on OS X 10.7.5):
 ```
-# For freetype 
+# For freetype
 export LIBPNG_CFLAGS=`/usr/local/opt/libpng/bin/libpng-config --cflags`
 export LIBPNG_LDFLAGS=`/usr/local/opt/libpng/bin/libpng-config --ldflags`
 
