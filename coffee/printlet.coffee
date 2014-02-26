@@ -55,9 +55,14 @@ printlet = (tilejson) ->
       # Cycle through tile providers to spread load
       url = providers[providerIndex] tile, zoom
       providerIndex = (providerIndex+1) % providers.length
-      getImg(url).then (img) ->
-        {x, y} = tilePoint tile
-        ctx.drawImage img, x, y, tileSize, tileSize
+      new Promise (resolve, reject) ->
+        getImg(url).then (img) ->
+          {x, y} = tilePoint tile
+          ctx.drawImage img, x, y, tileSize, tileSize
+          resolve()
+        , (err) ->
+          console.err err
+          resolve()
 
     startCoord = floor pointTile x:0, y:0
     endCoord = floor pointTile x:width, y:height
