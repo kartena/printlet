@@ -59,10 +59,15 @@ module.exports = (opt) ->
           else
             drawPath style, (ctx) ->
               ctx.arc x, y, df(radius, 8), 0 , 2 * Math.PI, false
-        when 'LineString', 'Polygon'
+        when 'LineString'
           drawPath style, (ctx) ->
             ctx.lineTo.apply(ctx, lnglatPoint lnglat) for lnglat in lnglats
-            ctx.lineTo.apply(ctx, lnglatPoint lnglats[0]) if type is 'Polygon'
+        when 'Polygon'
+          drawPath style, (ctx) ->
+            for ring in lnglats
+              for lnglat in ring
+                ctx.lineTo.apply(ctx, lnglatPoint lnglat)
+              ctx.closePath()
       resolve()
 
   features.reduce ((p, f) -> p.then drawFeature.bind(null, f)),
