@@ -29,15 +29,21 @@ server = createServer(function(req, res) {
         end = dimensions[1].split('.'),
         width = parseInt(dimensions[0]),
         height = parseInt(end[0]),
-        format = end[1];
-    opt = {
-      width: width,
-      height: height,
-      zoom: zoom,
-      lat: lat,
-      lng: lng,
-      format: format
-    };
+        format = end[1],
+        opt = {
+          width: width,
+          height: height,
+          zoom: zoom,
+          lat: lat,
+          lng: lng,
+          format: format
+        };
+    if ((tileJson.maxzoom != null && zoom > tileJson.maxzoom) ||
+        (tileJson.minzoom != null && zoom < tileJson.minzoom)) {
+      res.writeHead(400);
+      res.end(STATUS_CODES[400] + ": Supplied zoom level is out of bounds.");
+      return;
+    }
     if (query.geojson != null) {
       opt.geojson = JSON.parse(query.geojson);
     }
