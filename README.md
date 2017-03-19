@@ -127,7 +127,7 @@ are the same as the HTML5 canvas API for styling shapes.
       },
       "properties": {
         "style": {
-          "fillStyle": "rgb(200, 0, 0, 0.6)",
+          "fillStyle": "rgba(200, 0, 0, 0.6)",
           "marker": {
             "radius": 15
           }
