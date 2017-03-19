@@ -68,6 +68,13 @@ module.exports = (opt) ->
               for lnglat in ring
                 ctx.lineTo.apply(ctx, lnglatPoint lnglat)
               ctx.closePath()
+        when 'MultiPolygon'
+          drawPath style, (ctx) ->
+            for polys in lnglats
+              for ring in polys
+                for lnglat in ring
+                  ctx.lineTo.apply(ctx, lnglatPoint lnglat)
+                ctx.closePath()
       resolve()
 
   features.reduce ((p, f) -> p.then drawFeature.bind(null, f)),
